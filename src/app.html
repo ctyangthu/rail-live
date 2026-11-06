@@ -1592,7 +1592,7 @@ function renderDetail(){
     if (phase==='after') return 'done';
     return j<st.j?'done':j>st.j?'todo':st.mode==='run'?'next':'here';
   };
-  const sttOf=(w,last)=> w==='here' ? (st.mode==='wait'?'待發':st.mode==='arrived'?'已抵達':'停靠中') : w==='done' ? (last?'已抵達':'已開出') : w==='next' ? '即將到站' : '';
+  const sttOf=(w,last)=> w==='here' ? (st.mode==='wait'?'待發':st.mode==='arrived'?'已抵達':'停靠中') : w==='done' ? (last?'已抵達':'已過站') : w==='next' ? '即將到站' : '';
   const items=[];
   if (H_){
     // 高鐵 lists every station: stops by timetable order, non-stop stations by the train's position
