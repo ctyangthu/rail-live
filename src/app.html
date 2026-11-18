@@ -170,7 +170,7 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax
 .legend.min .lg-tog::after{content:"▾"}
 .legend .lg-sep{height:1px;background:var(--rule);margin:3px 6px}
 .legend.min .lg-sys,.legend.min .lg-foot,.legend.min .lg-sep,.legend.min .row small,.legend.min .lg-h .hint,.legend.min .lg-h .rc{display:none}
-.legend.min #lgH,.legend.min #lgKinds{display:contents}
+.legend.min #lgH,.legend.min #lgKinds,.legend.min .lg-grp,.legend.min .lg-rows{display:contents}
 .legend.min{grid-template-columns:repeat(2,auto);align-items:center;gap:1px 2px;width:max-content}
 .legend.min .lg-h{padding-bottom:0}
 .legend.min button.row{padding:2px 5px;gap:5px}
@@ -432,7 +432,7 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax
 @media (max-width:960px){
   html,body,.app{height:auto}
   main{grid-template-columns:minmax(0,1fr)}
-  .mapwrap{height:78vh;min-height:460px}
+  .mapwrap{height:auto}
   .rail{overflow:visible}
   .top{position:static}
   .clock{margin-left:0}
@@ -492,8 +492,29 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax
 .legend.min{grid-template-columns:repeat(3,auto) !important}
 .legend{max-height:calc(100% - 24px);overflow:auto}
 .board.m{--sc:#B58CF0}
-/* on a phone 23 legend rows would cover the map, so the folded legend is just its button */
-@media (max-width:560px){ .legend.min #lgH,.legend.min #lgKinds,.legend.min #lgM{display:none} .legend.min{grid-template-columns:auto !important} }
+/* the map and its controls sit in .mapbox. When the map is too narrow for the legend to stay clear of the island,
+   .mapwrap gets .lg-out and the legend moves below the map as rows of chips */
+.mapwrap{display:flex;flex-direction:column}
+.mapbox{position:relative;flex:1;min-height:0}
+@media (max-width:960px){ .mapbox{flex:none;height:78vh;min-height:460px} }
+.mapwrap.lg-out{background:none;border:0;border-radius:0;overflow:visible;gap:10px}
+.lg-out .mapbox{background:var(--sea);border:1px solid var(--rule);border-radius:14px;overflow:hidden}
+.lg-out .legend{position:static;flex:none;display:block;width:auto;max-width:none;max-height:none;overflow:visible;padding:9px 10px 10px;border-radius:14px;background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none}
+.lg-out .legend .lg-h{padding:0 2px 7px}
+.lg-out .legend .lg-grp{display:grid;grid-template-columns:6.4em minmax(0,1fr);align-items:start;gap:6px;padding:5px 0;border-top:1px solid var(--rule)}
+.lg-out .legend .lg-sys{padding:5px 0 0 2px;letter-spacing:.02em}
+.lg-out .legend .lg-rows{display:flex;flex-wrap:wrap;gap:4px}
+.lg-out .legend button.row{width:auto;gap:6px;padding:3px 9px 3px 7px;border:1px solid var(--rule);border-radius:999px}
+.lg-out .legend small,.lg-out .legend .lg-sep{display:none}
+.lg-out .legend b{min-width:0;padding-left:2px;font-size:14px}
+.lg-out .legend:not(.min) .lg-foot{display:flex;margin-top:0;padding:7px 2px 0;border-top:1px solid var(--rule)}
+.lg-out .legend:not(.min) .lg-h .hint{display:inline}
+/* on a phone the place buttons keep one row, scrolling sideways if they must, and the zoom buttons sit above them instead of over 東部 */
+@media (max-width:560px){ .mapctl{right:12px} .mapctl .regions{flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:none} .regions button{flex:none} .zoom{bottom:58px} }
+/* folded, the chips run on without the system names */
+.lg-out .legend.min{display:flex;flex-wrap:wrap;align-items:center;gap:4px;width:auto}
+.lg-out .legend.min .lg-grp,.lg-out .legend.min .lg-rows{display:contents}
+.lg-out .legend.min .lg-h{padding:0 6px 0 2px}
 </style>
 
 <div class="app">
@@ -537,6 +558,7 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax
 
   <main>
     <section class="mapwrap" aria-label="台灣捷運、高鐵與臺鐵路線地圖">
+      <div class="mapbox">
       <svg id="map" role="img" aria-label="台灣地圖與捷運、高鐵、臺鐵列車位置">
         <defs><pattern id="hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="4" fill="var(--tra)" opacity=".35"/><rect width="2" height="4" fill="var(--tra)"/></pattern></defs>
         <rect id="sea" fill="var(--sea)"/>
@@ -559,15 +581,6 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax
         <g id="trainLabels"></g>
         <g id="trainSel"></g>
       </svg>
-      <div class="ov legend" id="legend">
-        <div class="lg-h"><button class="lg-tog" id="lgTog" aria-expanded="true" title="收合或展開圖例">圖例</button><span class="hint">點選顯示或隱藏</span><span class="rc">運行中</span></div>
-        <div class="lg-sys">台灣高鐵</div>
-        <div id="lgH" role="group" aria-label="高鐵顯示"></div>
-        <div class="lg-sys">臺鐵</div>
-        <div id="lgKinds" role="group" aria-label="臺鐵車種篩選"></div>
-        <div id="lgM" role="group" aria-label="捷運路線顯示"></div>
-        <div class="lg-foot"><span><span class="trk-h"></span> 高鐵</span><span><span class="trk"></span> 臺鐵 · 虛線為支線</span><span>捷運靠右、雙鐵靠左行駛，虛框為停靠中；捷運列車放大後顯示</span></div>
-      </div>
       <div class="mapctl">
         <div class="ov scalebar"><i id="scaleBar" style="width:60px"></i><span id="scaleTxt">50 km</span></div>
         <div class="ov regions" role="group" aria-label="地圖範圍">
@@ -588,6 +601,14 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax
         <b id="offTitle">目前沒有列車運行</b>
         <span id="offText"></span>
         <div style="margin-top:10px"><button class="btn" data-jump="480">看 08:00</button></div>
+      </div>
+      </div>
+      <div class="ov legend" id="legend">
+        <div class="lg-h"><button class="lg-tog" id="lgTog" aria-expanded="true" title="收合或展開圖例">圖例</button><span class="hint">點選顯示或隱藏</span><span class="rc">運行中</span></div>
+        <div class="lg-grp"><div class="lg-sys">台灣高鐵</div><div class="lg-rows" id="lgH" role="group" aria-label="高鐵顯示"></div></div>
+        <div class="lg-grp"><div class="lg-sys">臺鐵</div><div class="lg-rows" id="lgKinds" role="group" aria-label="臺鐵車種篩選"></div></div>
+        <div id="lgM" role="group" aria-label="捷運路線顯示"></div>
+        <div class="lg-foot"><span><span class="trk-h"></span> 高鐵</span><span><span class="trk"></span> 臺鐵 · 虛線為支線</span><span>捷運靠右、雙鐵靠左行駛，虛框為停靠中；捷運列車放大後顯示</span></div>
       </div>
     </section>
 
@@ -1215,6 +1236,16 @@ function applyVB(){
   $('scaleBar').style.width=(km*pxPerKm).toFixed(0)+'px'; $('scaleTxt').textContent=km+' km';
 }
 new ResizeObserver(measure).observe(svg);
+// the legend sits on the map only when the map is wide enough for it to stay west of the island; otherwise it goes below.
+// Below the map it starts open on a phone and folded beside the side panel, where it takes height from the map
+const mapwrap=document.querySelector('.mapwrap');
+let lgOut=null;
+function placeLegend(){
+  const out=mapwrap.clientWidth<880; if (out===lgOut) return;
+  lgOut=out; mapwrap.classList.toggle('lg-out',out);
+  foldLegend(out ? matchMedia('(min-width:961px)').matches : mapwrap.clientHeight<1000);
+}
+new ResizeObserver(placeLegend).observe(mapwrap);
 
 function fitBox(b){ // expand bbox to the container aspect
   const ar=mapRect.width/mapRect.height||0.7; let {x,y,w,h}=b;
@@ -1222,12 +1253,12 @@ function fitBox(b){ // expand bbox to the container aspect
   return {x,y,w,h};
 }
 const geoBox=(lat0,lat1,lon0,lon1)=>{ const [x0,y1]=proj(lat0,lon0), [x1,y0]=proj(lat1,lon1); return {x:x0,y:y0,w:x1-x0,h:y1-y0}; };
-// on a wide map the island sits right of centre, clear of the open legend; on a phone, below it
-const REGIONS={ all:()=>geoBox(21.88,mapRect.width<520?25.7:25.32,mapRect.width>=880?119.55:119.95,122.05), hsr:()=>geoBox(22.55,25.15,119.95,121.75),
+// when the legend is on the map the island sits right of centre, clear of it
+const REGIONS={ all:()=>geoBox(21.88,25.32,lgOut?119.95:119.55,122.05), hsr:()=>geoBox(22.55,25.15,119.95,121.75),
   north:()=>geoBox(24.55,25.22,120.8,121.98), mid:()=>geoBox(23.4,24.75,120.15,120.98),
   south:()=>geoBox(22.25,23.5,120.05,121.0), east:()=>geoBox(22.6,24.82,120.95,121.98),
-  tpe:()=>geoBox(24.925,mapRect.width<880?25.3:25.215,mapRect.width>=880?121.27:121.33,121.65), tyc:()=>geoBox(24.93,25.13,121.17,121.54),
-  txg:()=>geoBox(24.085,24.215,mapRect.width>=880?120.55:120.59,120.74), khh:()=>geoBox(22.54,22.81,mapRect.width>=880?120.16:120.22,120.44) };
+  tpe:()=>geoBox(24.925,25.215,lgOut?121.33:121.27,121.65), tyc:()=>geoBox(24.93,25.13,121.17,121.54),
+  txg:()=>geoBox(24.085,24.215,lgOut?120.59:120.55,120.74), khh:()=>geoBox(22.54,22.81,lgOut?120.22:120.16,120.44) };
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let fly=null;
 function flyTo(target){
@@ -1475,7 +1506,7 @@ function renderSummary(){
 /* ── legend filter ─────────────────────────────── */
 const lgRow=([g,name,sub])=>`<button class="row k-${g}" data-k="${g}" aria-pressed="true"><span class="sw"></span><span class="nm">${name.replace('推拉式自強','推拉式<i>自強</i>')}</span><small>${sub}</small><b id="lg-${g}">0</b></button>`;
 $('lgH').innerHTML=lgRow(GROUPS[0]);
-$('lgM').innerHTML=M_SYS.map(([op,name])=>`<div class="lg-sys">${name}</div>`+M_GROUPS.filter(([g])=>M_KINDS[g].sys===op).map(lgRow).join('')).join('');
+$('lgM').innerHTML=M_SYS.map(([op,name])=>`<div class="lg-grp"><div class="lg-sys">${name}</div><div class="lg-rows">${M_GROUPS.filter(([g])=>M_KINDS[g].sys===op).map(lgRow).join('')}</div></div>`).join('');
 $('lgKinds').innerHTML=TRA_GROUPS.map((g,j)=>(j&&!g[3]&&TRA_GROUPS[j-1][3]?'<div class="lg-sep"></div>':'')+lgRow(g)).join('');
 // the legend folds to swatches and counts; it starts folded when the map is short
 function foldLegend(min){ $('legend').classList.toggle('min',min); $('lgTog').setAttribute('aria-expanded',!min); }
@@ -1885,7 +1916,7 @@ function onDayChange(){
 }
 
 /* ── boot ─────────────────────────────── */
-syncLive(); renderDayBtns(); measure(); vb=fitBox(REGIONS[state.region]()); applyVB(); renderLegend(); foldLegend(mapRect.height<1000||mapRect.width<880); onDayChange();
+syncLive(); renderDayBtns(); placeLegend(); measure(); vb=fitBox(REGIONS[state.region]()); applyVB(); renderLegend(); onDayChange();
 drawTrains(); selectPlace(state.place,false); setTab('run');
 let last=performance.now(), lastPanel=last;
 function frame(now){
