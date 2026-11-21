@@ -22,7 +22,7 @@
 ## 功能
 
 - **依日期與星期套用班表**
-  - 高鐵：依〈2026/2/2 起適用時刻表〉按星期套用，每日固定 131 班，其餘只在指定星期行駛（一 156、二 149、三 149、四 158、五 179、六 161、日 182）。疏運期間改用另行公告的時刻表，目前收錄〈2026 選舉疏運時刻表〉（11/27–11/30，各日 195、171、192、160 班）。
+  - 高鐵：依〈2026/2/2 起適用時刻表〉按星期套用，每日固定 131 班，其餘只在指定星期行駛（一 156、二 149、三 149、四 158、五 179、六 161、日 182）。疏運期間改用另行公告的時刻表，目前收錄〈2026 選舉疏運時刻表〉（11/27–11/30，各日 205、171、192、160 班；11/27 含另行公告的 10 班深夜紅眼班次，標「紅眼」，最晚 01:59 抵達）。時間軸拉到翌日 02:20，跨夜的列車可在原日期看到底。
   - 臺鐵：使用臺鐵每日公告的時刻表（約未來 60 天），每天約 900 班，其中區間車約 680 班、自強號約 130–160 班；超出公告範圍的日期，暫以最近一個同星期的日期推算。
   - 概況卡的「一週班次」分列週一到週日兩鐵各日班次（兩列比例尺不同），點選即可切換日期；疏運日另外標示。
 - **即時與模擬**：預設使用台灣現在時間；可切換日期、拖曳時間軸，並以 1×–900× 播放。跨午夜仍在行駛的前一天列車會繼續顯示。
@@ -104,6 +104,7 @@
 src/app.html                          網頁原始碼（資料以佔位字串嵌入；捷運部分與 metro-live 相同）
 data/thsr-timetable-2026-02-02.json   高鐵一般時刻表：214 個車次與行駛星期
 data/thsr-special-2026-11-27.json     高鐵選舉疏運時刻表：228 個車次與行駛日期
+data/thsr-extra-2026-11-27-redeye.json  高鐵 11/27 紅眼班次 10 班（與 thsr-live 的 special-2026-11-27-redeye.json 相同）
 data/tra-stations.json                臺鐵車站基本資料（代碼、站名、GPS）
 data/tra-trains.json                  臺鐵每日時刻表整理出的全車種班表、車站與軌道圖
 data/metro.json                       五個捷運系統與三條輕軌的逐班列車（tools/build_metro.py 產生）
@@ -135,7 +136,7 @@ python3 tools/parse_thsr_special.py 疏運時刻表.pdf data/thsr-special-YYYY-M
 python3 tools/build.py
 ```
 
-`build.py` 取日期最新的 `thsr-timetable-*.json` 為一般時刻表，所有 `thsr-special-*.json` 為疏運期間。
+`build.py` 取日期最新的 `thsr-timetable-*.json` 為一般時刻表，所有 `thsr-special-*.json` 為疏運期間；`build.py` 的 `THSR_EXTRAS` 把另行公告的加開車次（`thsr-extra-*.json`）併入其行駛日期所屬的疏運期間，並加上標籤與說明。
 
 在本機更新臺鐵時刻表（原始檔約 120 MB，放在 `raw/`，不納入版本控制）：
 
@@ -156,7 +157,7 @@ python3 tools/build.py
 
 ## 資料來源
 
-- 高鐵時刻表：[台灣高鐵〈2026/2/2 起適用時刻表〉〈2026 選舉疏運時刻表〉](https://www.thsrc.com.tw/ArticleContent/a3b630bb-1066-4352-a1ef-58c7b4e8ef7c)
+- 高鐵時刻表：[台灣高鐵〈2026/2/2 起適用時刻表〉〈2026 選舉疏運時刻表〉](https://www.thsrc.com.tw/ArticleContent/a3b630bb-1066-4352-a1ef-58c7b4e8ef7c)、[〈11/27 紅眼班次〉公告](https://www.thsrc.com.tw/ArticleContent/25425adb-288e-4a11-95ea-71e45184c4be)
 - 臺鐵時刻表：[臺鐵開放資料〈鐵路時刻表 JSON〉](https://ods.railway.gov.tw/tra-ods-web/ods/download/dataResource/railway_schedule/JSON/list)；車種對照：[臺鐵時刻查詢](https://www.railway.gov.tw/tra-tip-web/tip)
 - 捷運：交通部 [TDX 運輸資料流通服務](https://tdx.transportdata.tw/)（臺北大眾捷運公司、新北大眾捷運公司、桃園大眾捷運公司、臺中捷運公司、高雄捷運公司）
 - 地圖：[taiwan-atlas](https://github.com/dkaoster/taiwan-atlas)（原始資料為內政部國土測繪中心開放資料）
