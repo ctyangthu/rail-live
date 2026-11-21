@@ -694,7 +694,7 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax
       </section>
 
       <p class="foot">
-        資料來源：台北捷運、新北捷運（環狀線、三鶯線、淡海輕軌、安坑輕軌）、桃園機場捷運、臺中捷運與高雄捷運（含高雄環狀輕軌）為交通部 <a href="https://tdx.transportdata.tw/" target="_blank" rel="noopener">TDX 運輸資料流通服務</a>的開放資料：有各站時刻表的路線，本系統據以重建逐班列車；文湖線與臺中捷運綠線只公布班距，班次依班距與站間行車時間推估。台灣高鐵〈2026/2/2 起適用時刻表〉、〈2026 選舉疏運時刻表〉（<a href="https://www.thsrc.com.tw/ArticleContent/a3b630bb-1066-4352-a1ef-58c7b4e8ef7c" target="_blank" rel="noopener">thsrc.com.tw</a>）與〈11/27 紅眼班次〉公告（<a href="https://www.thsrc.com.tw/ArticleContent/25425adb-288e-4a11-95ea-71e45184c4be" target="_blank" rel="noopener">thsrc.com.tw</a>）；臺鐵公司開放資料〈鐵路時刻表 JSON〉（<a href="https://ods.railway.gov.tw/tra-ods-web/ods/download/dataResource/railway_schedule/JSON/list" target="_blank" rel="noopener">ods.railway.gov.tw</a>）。列車位置皆依表定時刻推算，不含誤點、停駛等即時營運資訊；轉乘的步行與等車時間為估計值，未納入國定假日班表與貓空纜車。本系統為非官方展示，實際行車以各公司公告為準。
+        資料來源：台北捷運、新北捷運（環狀線、三鶯線、淡海輕軌、安坑輕軌）、桃園機場捷運、臺中捷運與高雄捷運（含高雄環狀輕軌）為交通部 <a href="https://tdx.transportdata.tw/" target="_blank" rel="noopener">TDX 運輸資料流通服務</a>的開放資料：有各站時刻表的路線，本系統據以重建逐班列車，並於 2026/11/21 逐站與各公司官網時刻表核對（台北捷運、桃園捷運、高雄捷運官網及新北捷運淡海輕軌時刻表；淡海輕軌因 TDX 班表過時，改用新北捷運官網時刻）。文湖線與臺中捷運綠線沒有公開時刻表，班次依班距推估，各站首末班車對齊台北捷運、臺中捷運公告時間。台灣高鐵〈2026/2/2 起適用時刻表〉、〈2026 選舉疏運時刻表〉（<a href="https://www.thsrc.com.tw/ArticleContent/a3b630bb-1066-4352-a1ef-58c7b4e8ef7c" target="_blank" rel="noopener">thsrc.com.tw</a>）與〈11/27 紅眼班次〉公告（<a href="https://www.thsrc.com.tw/ArticleContent/25425adb-288e-4a11-95ea-71e45184c4be" target="_blank" rel="noopener">thsrc.com.tw</a>）；臺鐵公司開放資料〈鐵路時刻表 JSON〉（<a href="https://ods.railway.gov.tw/tra-ods-web/ods/download/dataResource/railway_schedule/JSON/list" target="_blank" rel="noopener">ods.railway.gov.tw</a>）。列車位置皆依表定時刻推算，不含誤點、停駛等即時營運資訊；轉乘的步行與等車時間為估計值，未納入國定假日班表與貓空纜車。本系統為非官方展示，實際行車以各公司公告為準。
       </p>
     </aside>
   </main>
@@ -1507,7 +1507,7 @@ function renderSummary(){
   notes.push(`<b>臺鐵</b>全車種依每日公告時刻表（${md(0)}–${md(NDAYS-1)}），本週以週${WK[nT.indexOf(tMax)]}最多（${tMax} 班）、週${WK[nT.indexOf(tMin)]}最少（${tMin} 班）。`);
   if (days.some(d=>proxy(d)!==d)) notes.push(`<span class="w">斜線長條的日期不在臺鐵已公告範圍，暫以最近一個同星期日期的班表推算。</span>`);
   const pk=curve.reduce((a,b)=>b[2]>a[2]?b:a);
-  notes.push(`<b>捷運</b>依交通部 TDX 的各站時刻表重建逐班列車（${MD.updated} 更新），平日與假日班表不同，淡海、安坑與高雄環狀輕軌也在其中；${ML.filter(l=>l.est).map(l=>l.name).join('、')}只公布班距，班次為依班距推估。`);
+  notes.push(`<b>捷運</b>依交通部 TDX 的各站時刻表重建逐班列車（${MD.updated} 更新），平日與假日班表不同，淡海、安坑與高雄環狀輕軌也在其中；${ML.filter(l=>l.est).map(l=>l.name).join('、')}沒有公開時刻表，班次依班距推估，各站首末班車對齊官方公告。其餘路線已逐站與官網時刻表核對，淡海輕軌改用新北捷運官網時刻。`);
   const pkM=M_GROUPS.reduce((a,[g])=>a+pk[1][g],0);
   if (pk[2]) notes.push(`依圖例顯示的列車，最多同時有 <b>${pk[2]}</b> 列在線（約 ${fmt(pk[0])}，高鐵 ${pk[1].hsr}、臺鐵 ${pk[2]-pk[1].hsr-pkM}、捷運 ${pkM}）。`);
   $('sumNote').innerHTML=notes.join('<br>');
@@ -1761,7 +1761,7 @@ function renderTimetable(){
     t.className='tt';
     t.innerHTML=`<thead><tr><th>車種</th><th>起站 開</th><th>迄站 到</th><th>停站</th><th>行車</th></tr></thead><tbody>`+
       rows.map(tr=>`<tr data-row="${tr.key}" data-pick="${tr.key}"><td><span class="tno k-${tr.g}">${tr.no}</span></td><td><span class="num" style="font-size:16px;font-weight:600">${fmt(tr.first)}</span> <small>${MS[tr.from].zh}</small></td><td><span class="num" style="font-size:16px;font-weight:600">${fmt(tr.last)}</span> <small>${MS[tr.to].zh}</small></td><td><small>${tr.nStops} 站</small></td><td><small>${durTxt(tr.last-tr.first)}</small></td></tr>`).join('')+'</tbody>';
-    $('ttCount').textContent=`${L.full} ${dateLabel(state.di)} ${L.dn[state.ttDirM].replace('往 ','往')} 共 ${rows.length} 班 · ${L.est?'本線只公布班距，班次依班距推估':'依各站時刻表重建'} · 綠底為運行中`;
+    $('ttCount').textContent=`${L.full} ${dateLabel(state.di)} ${L.dn[state.ttDirM].replace('往 ','往')} 共 ${rows.length} 班 · ${L.est?'本線沒有公開時刻表，班次依班距推估，首末班對齊官方':'依各站時刻表重建'} · 綠底為運行中`;
   } else {
     const rows=shown(state.di).filter(tr=>tr.sys==='T'&&(state.ttDirT==='all'||tr.dir===state.ttDirT)&&(state.ttCat==='all'||tr.cat===state.ttCat)&&(!q||tr.no.includes(q))).sort((a,b)=>a.first-b.first);
     t.className='tt';
@@ -1889,7 +1889,7 @@ function renderDetail(){
     : isM ? `<div class="dayrow"><span>行駛日</span><span class="dd">${WK.map((w,k)=>`<i class="${tr.days>>k&1?'on':''}${k===wkOf(state.di)?' cur':''}">${w}</i>`).join('')}</span><span>${mDays(tr)}</span></div>`
     : `<div class="chips">${carChips(tr)}</div><div class="cal">${calendar(tr,proxy(state.di))}<p><b>${runDaysT(tr)||'指定日期行駛'}</b><br>公告期間 ${md(0)}–${md(NDAYS-1)} 共 ${NDAYS} 天，本班表行駛 ${[...tr.days].filter(c=>c==='1').length} 天。方格一欄為一週（日至六），框線為所選日期。</p></div>`;
   const fleet = H_ ? 'N700ST 為台灣高鐵新世代列車，以日本 N700S 為基礎，由日立東芝聯盟製造，共購置 12 組。首組 2026 年 7 月出廠，預計 2027 年 7 月 1 日投入營運；本系統以 N700ST 呈現所有高鐵車次。'
-    : isM ? tr.kind.fleet+(tr.est?'本線沒有公開的逐班時刻，這個班次是依公告班距與站間行車時間推估的，實際發車時刻會有出入。':'捷運列車沒有公開的車次編號，本班次由各站時刻表重建，停站時刻以分鐘計。')
+    : isM ? tr.kind.fleet+(tr.est?'本線沒有公開的逐班時刻，這個班次是依公告班距與站間行車時間推估的，各站首末班車已對齊官方公告，其餘發車時刻會有出入。':'捷運列車沒有公開的車次編號，本班次由各站時刻表重建，停站時刻以分鐘計。')
     : `${tr.kind.fleet}臺鐵備註：${esc(tr.note)}`;
   const html=`<div class="detail-head"><span class="tno k-${tr.g}">${tr.no}</span><div class="grow"><h3>${stName(tr,tr.from)} → ${toName(tr)}</h3><p>${meta}</p></div>
     <div class="detail-actions">${pos?'<button class="btn" id="dLocate">定位</button>':''}<button class="btn icon" id="dClose" aria-label="關閉">✕</button></div></div>
